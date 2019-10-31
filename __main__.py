@@ -41,6 +41,7 @@ def usage():
 
 
 if __name__ == '__main__':
+    print(apply_pca.__annotations__)
     if len(sys.argv) == 3:
         word_vec = sys.argv[1]
         desired_ratio = sys.argv[2]
@@ -50,6 +51,6 @@ if __name__ == '__main__':
 
     print('Please wait ...')
     applied_pca = apply_pca(word_vec, ratio_similarity=desired_ratio)
-    print("Your destination file is: {}".format(applied_pca))
+    print(f"Your destination file is: {applied_pca}")
     # print('Press any key to continue ...')
     # sys.stdin.read(1)
