@@ -9,11 +9,35 @@ from sklearn.preprocessing import scale
 __author__ = 'aGn'
 
 
-def apply_pca(file_: 'word_vec', ratio_similarity: "ratio_similarity to real data")->'applied_pca':
-    df = pd.read_csv(file_, header=None, delimiter=" ", quoting=csv.QUOTE_NONE, encoding='utf-8')
+def apply_pca(
+        file: 'word vec',
+        ratio_similarity: "ratio_similarity to real data",
+        scale_type: 'Type of Scale method'=1
+)->'applied pca':
+    """
+    Applying PCA and Normalization.
+    :param file: Input Vector
+    :param ratio_similarity:
+    :param scale_type: There is two types of scale, whether using .scale() method which annotated
+    by 1 or using PCA default scaling method which annotated by 2.
+    :return: Applied PCA vector.
+    """
+    df = pd.read_csv(file, header=None, delimiter=" ", quoting=csv.QUOTE_NONE, encoding='utf-8')
     limited_df = df.iloc[:, 1:]  # Remove first column
-    scaled_df = scale(limited_df)
-    pca = PCA()
+
+    whiten = False
+    if scale_type == 1:
+        '''Set scale using .scale() method.'''
+        scaled_df = scale(limited_df)  # Normalizing data.
+    elif scale_type == 2:
+        '''Init inner PCA scaling.'''
+        scaled_df = limited_df
+        whiten = True
+    else:
+        '''Without any scaling.'''
+        scaled_df = limited_df
+
+    pca = PCA(whiten=whiten)
     pca.fit(scaled_df)
     w = pca.components_.T
     y = pca.fit_transform(scaled_df)
@@ -26,7 +50,7 @@ def apply_pca(file_: 'word_vec', ratio_similarity: "ratio_similarity to real dat
             break
 
     print(f"Number of PC is first {best_indices + 1} column(s)")
-    file_name = 'pca_applied_on_' + file_
+    file_name = 'pca_applied_on_' + file
     pca_applied = np.zeros((len(df), best_indices + 1))
     pca_applied = pd.DataFrame(pca_applied)
     pca_applied.iloc[:, 1:] = y[:, :best_indices]
